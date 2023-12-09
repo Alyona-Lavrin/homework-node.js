@@ -9,10 +9,9 @@ const contactsPath = path.resolve("./db/contacts.json");
 const listContacts = async () => {
   try {
     const data = await fs.readFile(contactsPath);
-    const contacts = JSON.parse(data);
-    return console.log(contacts);
+    return JSON.parse(data);
   } catch (error) {
-    console.error(error);
+    return error;
   }
 };
 
@@ -22,34 +21,42 @@ const getContactById = async (contactId) => {
     const contacts = JSON.parse(data);
     const contact = contacts.find((item) => item.id === contactId);
     if (!contact) {
-      throw new Error(`Contact with id=${contactId} not found!`);
+      return null;
     }
-    return console.log(contact);
+    return contact;
   } catch (error) {
-    console.error(error);
+    return error;
   }
 };
 
 const removeContact = async (contactId) => {
-  const data = await fs.readFile(contactsPath);
-  const contacts = JSON.parse(data);
-  const findIdx = contacts.findIndex((item) => item.id === contactId);
-  if (findIdx === -1) {
-    return null;
-  }
-  const deletedContact = contacts.filter((_, index) => index !== findIdx);
+  try {
+    const data = await fs.readFile(contactsPath);
+    const contacts = JSON.parse(data);
+    const findIdx = contacts.findIndex((item) => item.id === contactId);
+    if (findIdx === -1) {
+      return null;
+    }
+    const deletedContact = contacts.filter((_, index) => index !== findIdx);
 
-  await fs.writeFile(contactsPath, JSON.stringify(deletedContact));
-  return console.log(contacts[findIdx]);
+    await fs.writeFile(contactsPath, JSON.stringify(deletedContact));
+    return contacts[findIdx];
+  } catch (error) {
+    return error;
+  }
 };
 
 const addContact = async (name, email, phone) => {
-  const newContact = { id: v4(), name, email, phone };
-  const data = await fs.readFile(contactsPath);
-  const contacts = JSON.parse(data);
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return console.log(newContact);
+  try {
+    const newContact = { id: v4(), name, email, phone };
+    const data = await fs.readFile(contactsPath);
+    const contacts = JSON.parse(data);
+    contacts.push(newContact);
+    await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    return newContact;
+  } catch (error) {
+    return error;
+  }
 };
 
 module.exports = {
